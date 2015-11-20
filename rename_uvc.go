@@ -13,7 +13,7 @@ import (
 var Options struct {
 	RootDir    string        `goptions:"-d, --dir,  description='Directory where the rename happens'"`
 	OldPattern string        `goptions:"-f, --from, obligatory, description='Original pattern'"`
-	NewPattern string        `goptions:"-t, --to,   description='New pattern'"`
+	NewPattern string        `goptions:"-t, --to,   obligatory, description='New pattern'"`
 	Help       goptions.Help `goptions:"-h, --help, description='Show this help'"`
 }
 
