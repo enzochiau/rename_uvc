@@ -2,22 +2,23 @@ package main
 
 import (
 	"fmt"
-	"github.com/voxelbrain/goptions"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/voxelbrain/goptions"
 )
 
-var Options struct {
+var options struct {
 	RootDir    string        `goptions:"-d, --dir,  description='Directory where the rename happens'"`
 	OldPattern string        `goptions:"-f, --from, obligatory, description='Original pattern'"`
 	NewPattern string        `goptions:"-t, --to,   obligatory, description='New pattern'"`
 	Help       goptions.Help `goptions:"-h, --help, description='Show this help'"`
 }
 
-func RenamePackage(fileName, old, new string) error {
+func renamePackage(fileName, old, new string) error {
 	input, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Fatalln(err)
@@ -28,9 +29,9 @@ func RenamePackage(fileName, old, new string) error {
 
 	NEW := strings.ToUpper(new)
 	OLD := strings.ToUpper(old)
-	for i, _ := range lines {
-		lines[i] = strings.Replace(lines[i], old, new, -1) 
-		lines[i] = strings.Replace(lines[i], OLD, NEW, -1) 
+	for i := range lines {
+		lines[i] = strings.Replace(lines[i], old, new, -1)
+		lines[i] = strings.Replace(lines[i], OLD, NEW, -1)
 	}
 	output := strings.Join(lines, "\n")
 	err = ioutil.WriteFile(fileName, []byte(output), 0644)
@@ -41,7 +42,7 @@ func RenamePackage(fileName, old, new string) error {
 	return nil
 }
 
-func Rename(rootDir, old, new string) error {
+func rename(rootDir, old, new string) error {
 	files, err := ioutil.ReadDir(rootDir)
 	if err != nil {
 		fmt.Println(err)
@@ -57,7 +58,7 @@ func Rename(rootDir, old, new string) error {
 				if err != nil {
 					return err
 				}
-				err = RenamePackage(path.Join(rootDir, newName), old+"_", new+"_")
+				err = renamePackage(path.Join(rootDir, newName), old+"_", new+"_")
 				if err != nil {
 					return err
 				}
@@ -68,16 +69,20 @@ func Rename(rootDir, old, new string) error {
 }
 
 func main() {
-	goptions.ParseAndFail(&Options)
+	goptions.ParseAndFail(&options)
 
 	// Use current directory by default
-	if Options.RootDir == "" {
-		Options.RootDir = os.Getenv("PWD")
+	if options.RootDir == "" {
+		options.RootDir = os.Getenv("PWD")
 	}
 
-	Options.RootDir = strings.TrimRight(Options.RootDir, "/")
+	options.RootDir = strings.TrimRight(options.RootDir, "/")
 
-	fmt.Printf("%+v\n", Options)
+	fmt.Printf("%+v\n", options)
 
-	Rename(Options.RootDir, Options.OldPattern, Options.NewPattern)
+	err := rename(options.RootDir, options.OldPattern, options.NewPattern)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 }
