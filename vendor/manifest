@@ -1,0 +1,11 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/voxelbrain/goptions",
+			"repository": "https://github.com/voxelbrain/goptions",
+			"revision": "26cb8b04692384f4dc269de3b5fcf3e2ef78573e",
+			"branch": "master"
+		}
+	]
+}
